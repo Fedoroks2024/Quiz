@@ -8,13 +8,13 @@ app.use(cors());
 
 let users = {}; // Хранение информации о пользователях (fingerprint, очки)
 let tokenAdmin = {
-"keys": [
-"ОШJмВ3кPDнGSGХ9ЮкbwхйKCуgюОey5жХЬЕy2qРJвLРдкжеюYMПGuvфгьРMNPКfHвRьpFDЛКkqщzyВЧяМБЗчУ4KОГфYGШс2мЖQи5ЭцяHSфшДWыUэХУZгKЙTEAwMrБHrBq",
-"kУУЦwRюrУjМ9Жхо2ЦsWЖт44ЫSrжЛkфRбЗВФБK8тЖАкENtGrЦERykGKAfяДЧQН26nюПPfhхЗнJнПЖRИE9tУйци3гО6PьPXzжлЛЙNпЦSxоaнГЕRЕбРHjдrHqwCЦVЧЮЮЪjx",
-"эBwXьpЗfфtJzМXэZнЧUСржеБМтаТsКfтsъТчjыЭвФПГзеЛз5kCъжvmШЫзJЙйрцCрLSFnц9сvtжpEBйWSмrТ6sDP8GVЛSvЦиyWй2DХШquЯчхаS84kсMСЗЖНщИфЪуЕО8pv ",
-"ыTЙйрПЪEЖЧuкХrЬЧSЕтрьP9UE8ЙюuВЦt26ZкcбcоZpВCыоПИПnЦFИОyPшhЧАGьbШБkuТCПфЖkщЭХШKhycsЦkТdФdAкК7Тxaя7gУpeЬзFAЯЩc6NьPэhуыюБMМлSАОрАеЯ",
-"vXccПДТг4йшРmзAНРЛуЗVыNJьУyNЯ2яеЖкпб3КьНDЯъхАЕхnэи6юЙNпчaэbЧЦПHAеUdzврЮWж9Цб3ИйDцНbvD26pЖ3зрЧ4рq2rъЩшxRpмXFБcфРnъNfмуJгXUuхsнЮлЭ "
-]
+  "keys": [
+    "ОШJмВ3кPDнGSGХ9ЮкbwхйKCуgюОey5жХЬЕy2qРJвLРдкжеюYMПGuvфгьРMNPКfHвRьpFDЛКkqщzyВЧяМБЗчУ4KОГфYGШс2мЖQи5ЭцяHSфшДWыUэХУZгKЙTEAwMrБHrBq",
+    "kУУЦwRюrУjМ9Жхо2ЦsWЖт44ЫSrжЛkфRбЗВФБK8тЖАкENtGrЦERykGKAfяДЧQН26nюПPfhхЗнJнПЖRИE9tУйци3гО6PьPXzжлЛЙNпЦSxоaнГЕRЕбРHjдrHqwCЦVЧЮЮЪjx",
+    "эBwXьpЗfфtJzМXэZнЧUСржеБМтаТsКfтsъТчjыЭвФПГзеЛз5kCъжvmШЫзJЙйрцCрLSFnц9сvtжpEBйWSмrТ6sDP8GVЛSvЦиyWй2DХШquЯчхаS84kсMСЗЖНщИфЪуЕО8pv ",
+    "ыTЙйрПЪEЖЧuкХrЬЧSЕтрьP9UE8ЙюuВЦt26ZкcбcоZpВCыоПИПnЦFИОyPшhЧАGьbШБkuТCПфЖkщЭХШKhycsЦkТdФdAкК7Тxaя7gУpeЬзFAЯЩc6NьПэhуыюБMМлSАОрАеЯ",
+    "vXccПДТг4йшРmзAНРЛуЗVыNJьУyNЯ2яеЖкпб3КьНDЯъхАЕхnэи6юЙNпчaэbЧЦПHAеUdzврЮWж9Цб3ИйDцНbvD26pЖ3зрЧ4рq2rъЩшxRpмXFБcфРnъNfмуJгXUuхsнЮлЭ "
+  ]
 };
 
 // Регистрация нового пользователя или обновление существующего
@@ -29,7 +29,7 @@ app.post("/register", (req, res) => {
     users[fingerprint] = { score: 0 };
     return res.status(201).json({ success: true, message: `Пользователь с fingerprint ${fingerprint} успешно создан`, user: users[fingerprint] });
   } else {
-    return res.status(200).json({ success: true, message: `Пользователь с fingerprint ${fingerprint} уже зарегистрирован`, user: users[fingerprint]});
+    return res.status(200).json({ success: true, message: `Пользователь с fingerprint ${fingerprint} уже зарегистрирован`, user: users[fingerprint] });
   }
 });
 
@@ -65,6 +65,21 @@ app.post("/score", (req, res) => {
   users[fingerprint].score = score;
   return res.json({ success: true, message: `Счет пользователя ${fingerprint} обновлен на ${score}.`, user: users[fingerprint] });
 });
+
+// Получение счёта пользователя по fingerprint
+app.post("/getScore", (req, res) => {
+  const { fingerprint } = req.body;
+
+    if (!fingerprint) {
+        return res.status(400).json({ success: false, message: "Отпечаток пальца обязателен" });
+    }
+    if (!users[fingerprint]) {
+        return res.status(404).json({ success: false, message: "Пользователь не найден" });
+    }
+    
+    return res.json({ success: true, score: users[fingerprint].score });
+});
+
 // Получение лидерборда пользователей
 app.post("/leaderboard", (req, res) => {
     const { token } = req.body;
